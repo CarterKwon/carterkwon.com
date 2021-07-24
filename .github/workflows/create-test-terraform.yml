@@ -1,8 +1,8 @@
 name: 'Create Terraform Test Environment'
 
 on:
-  pull_request:
-    branches:
+  push:
+    branches-ignore:
     - main
 
 jobs:
@@ -15,6 +15,12 @@ jobs:
       run:
         shell: bash
         working-directory: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'us-east-1'
+    
     
     steps:
     # Checkout the repository to the GitHub Actions runner
