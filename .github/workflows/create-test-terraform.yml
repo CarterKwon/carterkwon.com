@@ -29,11 +29,11 @@ jobs:
     # Set branch name to an env var
     - name: Extract Branch Name (Non-PR)
       if: github.event_name != 'pull_request'
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
     - name: Extract Branch Name (PR)
       if: github.event_name == 'pull_request'
-      run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
+      run: echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
