@@ -54,7 +54,7 @@ jobs:
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color
+      run: terraform plan -var="branch_name=$BRANCH_NAME" -input=false -no-color
 
     # Apply the terraform code
     - name: Terraform Apply
