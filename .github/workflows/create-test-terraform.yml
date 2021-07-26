@@ -26,9 +26,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # Use commit hash as identifier
-    - name: Extract Commit Hash
-      run: echo "COMMIT_HASH=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+      # Set branch name to an env var
+    - name: Extract Branch Name (Non-PR)
+      if: github.event_name != 'pull_request'
+      run: echo "BRANCH_NAME=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+    - name: Extract Branch Name Hash
+      if: github.event_name == 'pull_request'
+      run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -45,7 +50,7 @@ jobs:
 
     # Configure workspace
     - name: Terraform Workspace
-      run: terraform workspace select $COMMIT_HASH || terraform workspace new $COMMIT_HASH
+      run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
