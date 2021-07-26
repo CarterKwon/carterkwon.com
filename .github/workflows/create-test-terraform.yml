@@ -49,8 +49,8 @@ jobs:
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var="commit_hash=$COMMIT_HASH" -input=false -no-color
+      run: terraform plan -input=false -no-color
 
     # Apply the terraform code
     - name: Terraform Apply
-      run: terraform apply -var="commit_hash=$COMMIT_HASH" -auto-approve
+      run: terraform apply -auto-approve
