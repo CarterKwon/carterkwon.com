@@ -29,7 +29,7 @@ jobs:
       # Set branch name to an env var
     - name: Extract Branch Name (Non-PR)
       if: github.event_name != 'pull_request'
-      run: echo "BRANCH_NAME=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+      run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
     - name: Extract Branch Name Hash
       if: github.event_name == 'pull_request'
