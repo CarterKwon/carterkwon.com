@@ -3,6 +3,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "branch_name" {
-  description = "The name of the branch that's being deployed."
+variable "commit_hash" {
+  description = "The commit hash to be used as an identifier."
 }
