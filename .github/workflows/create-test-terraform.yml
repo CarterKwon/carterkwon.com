@@ -53,8 +53,8 @@ jobs:
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color -var='tags={"environment":"$BRANCH_HASH","author":"Carter Kwon"}'
+      run: terraform plan -input=false -no-color -var='tags={"environment":"${{ env.BRANCH_HASH }}","author":"Carter Kwon"}'
 
     # Apply the terraform code
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var='tags={"environment":"$BRANCH_HASH","author":"Carter Kwon"}'
+      run: terraform apply -auto-approve -var='tags={"environment":"${{ env.BRANCH_HASH }}","author":"Carter Kwon"}'
