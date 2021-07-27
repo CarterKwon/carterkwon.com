@@ -43,10 +43,22 @@ jobs:
     - name: Terraform Init
       run: terraform init
 
-    
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       run: terraform fmt -check
+
+    # Prepare terraform vars using jinja
+    - name: Jinja terraform.tfvars.j2
+      uses: cuchi/jinja2-action@v1.2.0
+      with:
+        template: terraform.tfvars.j2
+        output_file: terraform.tfvars
+        strict: true
+        variables: |
+          tags={
+            environment=$BRANCH_HASH,
+            author=Carter
+          }
 
     # Configure workspace
     - name: Terraform Workspace
