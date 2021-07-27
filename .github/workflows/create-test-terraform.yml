@@ -51,8 +51,8 @@ jobs:
     - name: Jinja terraform.tfvars.j2
       uses: cuchi/jinja2-action@v1.2.0
       with:
-        template: terraform.tfvars.j2
-        output_file: terraform.tfvars
+        template: terraform/terraform.tfvars.j2
+        output_file: terraform/terraform.tfvars
         strict: true
         variables: |
           tags={environment=$BRANCH_HASH, author=Carter}
