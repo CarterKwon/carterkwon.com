@@ -47,25 +47,14 @@ jobs:
     - name: Terraform Format
       run: terraform fmt -check
 
-    # Prepare terraform vars using jinja
-    - name: Jinja terraform.tfvars.j2
-      uses: cuchi/jinja2-action@v1.2.0
-      with:
-        template: terraform/terraform.tfvars.j2
-        output_file: terraform/terraform.tfvars
-        strict: true
-        variables: |
-          environment=test-$BRANCH_HASH
-          author=Carter
-
     # Configure workspace
     - name: Terraform Workspace
       run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color
+      run: terraform plan -input=false -no-color -var='tags={"environment":"$BRANCH_HASH","author":"Carter Kwon"}'
 
     # Apply the terraform code
     - name: Terraform Apply
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -var='tags={"environment":"$BRANCH_HASH","author":"Carter Kwon"}'
