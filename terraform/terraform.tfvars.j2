@@ -1,5 +1,4 @@
 tags = {
-  {%- for key, value in tags.iteritems() %}
-  {{ key }} = "{{ value }}"
-  {%- endfor %}
+  environment="{{ environment }}"
+  author="{{ author }}"
 }
