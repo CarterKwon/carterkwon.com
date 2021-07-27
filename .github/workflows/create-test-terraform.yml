@@ -53,7 +53,7 @@ jobs:
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}","author":"Carter Kwon"}'
+      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}","author":"Carter Kwon", "product":"carterkwon.com"}'
   
   deploy-terraform:
     needs: prepare-terraform
@@ -92,4 +92,4 @@ jobs:
       run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
     # Apply the terraform code
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var='tags={"environment":"test-${{ env.BRANCH_HASH }}","author":"Carter Kwon"}'
+      run: terraform apply -auto-approve -var='tags={"environment":"test-${{ env.BRANCH_HASH }}","author":"Carter Kwon", "product":"carterkwon.com"}'
