@@ -55,7 +55,8 @@ jobs:
         output_file: terraform/terraform.tfvars
         strict: true
         variables: |
-          tags={environment=$BRANCH_HASH, author=Carter}
+          environment=test-$BRANCH_HASH
+          author=Carter
 
     # Configure workspace
     - name: Terraform Workspace
