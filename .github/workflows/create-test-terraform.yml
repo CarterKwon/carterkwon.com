@@ -55,11 +55,11 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -out=terraform.plan
     
-    - name: Upload Terraform Plan
+    - name: Upload Terraform Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: plan
-        path: terraform/terraform.plan
+        name: terraform
+        path: terraform/
   
   deploy-terraform:
     needs: prepare-terraform
@@ -85,22 +85,14 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
-
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
-
     # Configure workspace
-    - name: Terraform Workspace
-      run: terraform workspace select $BRANCH_HASH
+    # - name: Terraform Workspace
+    #   run: terraform workspace select $BRANCH_HASH
 
     - name: Download Terraform Plan
       uses: actions/download-artifact@v2
       with:
-        name: plan
+        name: terraform
         path: terraform/
     
     # Apply the terraform code
