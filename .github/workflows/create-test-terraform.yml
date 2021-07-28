@@ -53,7 +53,7 @@ jobs:
     
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
+      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -out=terraform.plan
     
     - name: Upload Terraform Plan
       uses: actions/upload-artifact@v2
