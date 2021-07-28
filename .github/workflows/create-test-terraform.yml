@@ -86,8 +86,8 @@ jobs:
       uses: hashicorp/setup-terraform@v1
 
     # Configure workspace
-    # - name: Terraform Workspace
-    #   run: terraform workspace select $BRANCH_HASH
+    - name: Terraform Workspace
+      run: terraform workspace select $BRANCH_HASH
 
     - name: Download Terraform Plan
       uses: actions/download-artifact@v2
