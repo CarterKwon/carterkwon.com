@@ -101,6 +101,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: plan
+        path: terraform/
     
     # Apply the terraform code
     - name: Terraform Apply
