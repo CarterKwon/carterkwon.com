@@ -58,8 +58,8 @@ jobs:
     - name: Upload Terraform Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: terraform
-        path: terraform
+        name: plan
+        path: terraform/terraform.plan
   
   deploy-terraform:
     needs: prepare-terraform
@@ -97,7 +97,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: plan
-        path: terraform/
+        path: terraform/terraform.plan
     
     # Apply the terraform code
     - name: Terraform Apply
