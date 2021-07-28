@@ -105,4 +105,4 @@ jobs:
     
     # Apply the terraform code
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var='tags={"environment":"test-${{ env.BRANCH_HASH }}","author":"Carter Kwon", "product":"carterkwon.com"}' terraform.plan
+      run: terraform apply -auto-approve terraform.plan
