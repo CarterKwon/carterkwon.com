@@ -61,11 +61,6 @@ jobs:
       id: plan
       run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -detailed-exitcode -out=terraform.plan
       continue-on-error: true
-    
-    - name: Check Terraform Plan Exit Code
-      run: |
-        echo "Terraform plan returned ${{ steps.plan.outputs.exitcode }}"
-        exit ${{ steps.plan.outputs.exitcode }}
 
     - name: Upload Terraform Artifacts
       uses: actions/upload-artifact@v2
