@@ -58,7 +58,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       id: plan
-      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -detailed-exitcode -out=terraform.plan
+      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com", "temporary":"tag"}' -detailed-exitcode -out=terraform.plan
       continue-on-error: true
 
     - name: Upload Terraform Artifacts
