@@ -89,6 +89,9 @@ jobs:
     - name: Terraform Init
       run: terraform init
 
+    - name: Terraform Providers
+      run: terraform providers
+
     # Configure workspace
     - name: Terraform Workspace
       run: terraform workspace select $BRANCH_HASH
