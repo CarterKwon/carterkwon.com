@@ -20,6 +20,8 @@ jobs:
   prepare-terraform:
     name: Prepare Terraform
     runs-on: ubuntu-latest
+    outputs:
+      plan-status: ${{ steps.plan.outputs.exitcode }} 
     
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -75,6 +77,7 @@ jobs:
     name: Deploy Terraform
     runs-on: ubuntu-latest
     environment: test
+    if: ${{ needs.prepare-terraform.outputs.plan-status == 2 }}
 
     steps:
     # Checkout the repository to the GitHub Actions runner
