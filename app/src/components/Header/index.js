@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function Header() {
   return (
@@ -20,6 +20,18 @@ export default function Header() {
               </a>
             </li>
           </ul>
+          <p>
+            {"Email: "}
+            <a href="mailto:{{ site.email }}" target="_blank">
+              carterkwon@me.com
+            </a>
+          </p>
+          <p>
+            {"Web: "}
+            <a href="mailto:{{ site.email }}" target="_blank">
+              https://carterkwon.com
+            </a>
+          </p>
         </div>
       </div>
     </div>

@@ -316,6 +316,10 @@ body {
     display: none !important;
   }
 }
+.badges {
+  text-align: center;
+}
+
 .button--sacnite::before {
   content: "";
   position: absolute;

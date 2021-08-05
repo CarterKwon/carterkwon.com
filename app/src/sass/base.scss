@@ -4,9 +4,9 @@
 @import url(https://use.fontawesome.com/releases/v5.11.2/css/v4-shims.css);
 
 button,
-input[type='button'],
-input[type='reset'],
-input[type='submit'] {
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
   appearance: none;
   background-color: #477dca;
   border: 0;
@@ -14,7 +14,7 @@ input[type='submit'] {
   color: #fff;
   cursor: pointer;
   display: inline-block;
-  font-family: 'Helvetica Neue', 'Helvetica', 'Roboto', 'Arial', sans-serif;
+  font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   font-size: 1rem;
   -webkit-font-smoothing: antialiased;
   font-weight: 600;
@@ -28,26 +28,26 @@ input[type='submit'] {
 }
 button:hover,
 button:focus,
-input[type='button']:hover,
-input[type='button']:focus,
-input[type='reset']:hover,
-input[type='reset']:focus,
-input[type='submit']:hover,
-input[type='submit']:focus {
+input[type="button"]:hover,
+input[type="button"]:focus,
+input[type="reset"]:hover,
+input[type="reset"]:focus,
+input[type="submit"]:hover,
+input[type="submit"]:focus {
   background-color: #3964a2;
   color: #fff;
 }
 button:disabled,
-input[type='button']:disabled,
-input[type='reset']:disabled,
-input[type='submit']:disabled {
+input[type="button"]:disabled,
+input[type="reset"]:disabled,
+input[type="submit"]:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 button:disabled:hover,
-input[type='button']:disabled:hover,
-input[type='reset']:disabled:hover,
-input[type='submit']:disabled:hover {
+input[type="button"]:disabled:hover,
+input[type="reset"]:disabled:hover,
+input[type="submit"]:disabled:hover {
   background-color: #477dca;
 }
 
@@ -62,7 +62,7 @@ input,
 label,
 select {
   display: block;
-  font-family: 'Helvetica Neue', 'Helvetica', 'Roboto', 'Arial', sans-serif;
+  font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   font-size: 1rem;
 }
 
@@ -71,7 +71,7 @@ label {
   margin-bottom: 0.375rem;
 }
 label.required::after {
-  content: '*';
+  content: "*";
 }
 label abbr {
   display: none;
@@ -96,7 +96,7 @@ dl dd {
 
 table {
   border-collapse: collapse;
-  font-feature-settings: 'kern', 'liga', 'tnum';
+  font-feature-settings: "kern", "liga", "tnum";
   margin: 0.75rem 0;
   table-layout: fixed;
   width: 100%;
@@ -290,4 +290,8 @@ body {
   .no-print * {
     display: none !important;
   }
+}
+
+.badges {
+  text-align: center;
 }

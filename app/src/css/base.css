@@ -316,3 +316,6 @@ body {
     display: none !important;
   }
 }
+.badges {
+  text-align: center;
+}
