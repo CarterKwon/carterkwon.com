@@ -10,12 +10,14 @@ import "sass/type.scss";
 import Header from "components/Header";
 import About from "components/About";
 import Footer from "components/Footer";
+import Experience from "components/Experience";
 
 function App() {
   return (
     <div className="App">
       <Header />
       <About />
+      <Experience />
       <Footer />
     </div>
   );
