@@ -11,6 +11,7 @@ import Header from "components/Header";
 import About from "components/About";
 import Footer from "components/Footer";
 import Experience from "components/Experience";
+import Education from "components/Education";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Header />
       <About />
       <Experience />
+      <Education />
       <Footer />
     </div>
   );
