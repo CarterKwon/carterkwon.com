@@ -1,0 +1,12 @@
+.dark {
+  background-color: #222;
+  color: #e6e6e6;
+}
+
+.dark mark {
+  color: #222;
+  background-color: #e6e6e6;
+}
+.dark a {
+  color: #477dca;
+}
