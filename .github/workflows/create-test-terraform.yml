@@ -115,6 +115,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve terraform.plan
   build-react:
+    if: always()
     needs: deploy-terraform
     name: Build React
     runs-on: ubuntu-latest
@@ -139,6 +140,7 @@ jobs:
           name: build
           path: app/build/
   deploy-react:
+    if: always()
     needs: build-react
     name: Deploy React
     runs-on: ubuntu-latest
