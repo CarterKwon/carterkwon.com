@@ -165,4 +165,5 @@ jobs:
 
       - name: Upload files to S3
         run: |
-          aws s3 sync build/ s3://carterkwon.com-557228 --delete
+          ls
+          aws s3 sync app/build/ s3://carterkwon.com-557228 --delete
