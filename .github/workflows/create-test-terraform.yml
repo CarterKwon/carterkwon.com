@@ -115,7 +115,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve terraform.plan
 
-  build-react:
+  build-and-deploy-react:
     if: always()
     needs: deploy-terraform
     name: Build React
@@ -123,6 +123,7 @@ jobs:
     defaults:
       run:
         working-directory: app
+
     steps:
       # Checkout the repository to the GitHub Actions runner
       - name: Checkout
@@ -135,35 +136,14 @@ jobs:
       - run: npm install
       - run: CI=false npm run build
 
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: app/build/
-
-  deploy-react:
-    if: always()
-    needs: build-react
-    name: Deploy React
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
-    steps:
-      - name: Download React Build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build/
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2 # replace this with your aws-region
+          aws-region: us-east-1 # replace this with your aws-region
 
       - name: Upload files to S3
         run: |
           ls
-          aws s3 sync app/build/ s3://carterkwon.com-557228 --delete
+          aws s3 sync build/ s3://carterkwon.com-557228 --delete
