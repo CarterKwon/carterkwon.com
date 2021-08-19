@@ -1,4 +1,4 @@
-name: "Create Terraform Test Environment"
+name: "Create Test Environment"
 
 concurrency: ci-${{ github.ref }}
 
@@ -118,7 +118,7 @@ jobs:
   build-and-deploy-react:
     if: always()
     needs: deploy-terraform
-    name: Build React
+    name: Build & Deploy React
     runs-on: ubuntu-latest
     defaults:
       run:
