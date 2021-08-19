@@ -114,6 +114,7 @@ jobs:
       # Apply the terraform code
       - name: Terraform Apply
         run: terraform apply -auto-approve terraform.plan
+
   build-react:
     if: always()
     needs: deploy-terraform
@@ -125,7 +126,7 @@ jobs:
     steps:
       # Checkout the repository to the GitHub Actions runner
       - name: Checkout
-        uses: actions/checkout@v2\
+        uses: actions/checkout@v2
 
       - name: Install Node.js
         uses: actions/setup-node@v2
@@ -139,6 +140,7 @@ jobs:
         with:
           name: build
           path: app/build/
+
   deploy-react:
     if: always()
     needs: build-react
@@ -153,6 +155,7 @@ jobs:
         with:
           name: build
           path: build/
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
