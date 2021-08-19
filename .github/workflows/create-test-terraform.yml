@@ -133,7 +133,7 @@ jobs:
         with:
           node-version: "14"
       - run: npm install
-      - run: npm run build
+      - run: CI=false npm run build
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
