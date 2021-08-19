@@ -4,6 +4,11 @@ variable "aws_region" {
 }
 
 variable "tags" {
-  description = "resource tags"
+  description = "Resource tags"
   type        = map(string)
+}
+
+variable "app_domain" {
+  description = "Domain of the app"
+  type        = string
 }

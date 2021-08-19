@@ -1,11 +1,11 @@
-name: 'Create Terraform Test Environment'
+name: "Create Terraform Test Environment"
 
 concurrency: ci-${{ github.ref }}
 
 on:
   push:
     branches-ignore:
-    - main
+      - main
 
 # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 defaults:
@@ -16,57 +16,57 @@ defaults:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: 'us-east-1'
+  AWS_DEFAULT_REGION: "us-east-1"
 
 jobs:
   prepare-terraform:
     name: Prepare Terraform
     runs-on: ubuntu-latest
     outputs:
-      plan-status: ${{ steps.plan.outputs.exitcode }} 
-    
+      plan-status: ${{ steps.plan.outputs.exitcode }}
+
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      # Get the first 6 characters from hash of branch name to use as identifier
-    - name: Extract Branch Hash (Non-PR)
-      if: github.event_name != 'pull_request'
-      run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+        # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
-    - name: Extract Branch Hash
-      if: github.event_name == 'pull_request'
-      run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check
 
-    # Configure workspace
-    - name: Terraform Workspace
-      run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
-    
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      id: plan
-      run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -detailed-exitcode -out=terraform.plan
-      continue-on-error: true
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
 
-    - name: Upload Terraform Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: plan
-        path: terraform/terraform.plan
-  
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=${{ env.BRANCH_HASH }}.dev.carterkwon.com" -detailed-exitcode -out=terraform.plan
+        continue-on-error: true
+
+      - name: Upload Terraform Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: plan
+          path: terraform/terraform.plan
+
   deploy-terraform:
     needs: prepare-terraform
     name: Deploy Terraform
@@ -75,37 +75,37 @@ jobs:
     if: ${{ needs.prepare-terraform.outputs.plan-status == 2 }}
 
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      # Get the first 6 characters from hash of branch name to use as identifier
-    - name: Extract Branch Hash (Non-PR)
-      if: github.event_name != 'pull_request'
-      run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+        # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
-    - name: Extract Branch Hash
-      if: github.event_name == 'pull_request'
-      run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
 
-    # Configure workspace
-    - name: Terraform Workspace
-      run: terraform workspace select $BRANCH_HASH
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select $BRANCH_HASH
 
-    - name: Download Terraform Plan
-      uses: actions/download-artifact@v2
-      with:
-        name: plan
-        path: terraform/
-    
-    # Apply the terraform code
-    - name: Terraform Apply
-      run: terraform apply -auto-approve terraform.plan
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: plan
+          path: terraform/
+
+      # Apply the terraform code
+      - name: Terraform Apply
+        run: terraform apply -auto-approve terraform.plan
