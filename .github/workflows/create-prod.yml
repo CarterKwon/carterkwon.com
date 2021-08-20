@@ -10,10 +10,11 @@ defaults:
     shell: bash
 
 jobs:
-  # Deploy infrastructure resources
-  deploy-terraform:
-    name: Create prod environment
+  prepare-terraform:
+    name: Prepare Terraform
     runs-on: ubuntu-latest
+    outputs:
+      plan-status: ${{ steps.plan.outputs.exitcode }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -45,7 +46,48 @@ jobs:
 
       # Generates an execution plan for Terraform
       - name: Terraform Plan
+        id: plan
         run: terraform plan -var='tags={"environment":"prod", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
+        continue-on-error: true
+
+      - name: Upload Terraform Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: plan
+          path: terraform/terraform.plan
+
+  deploy-terraform:
+    needs: prepare-terraform
+    name: Deploy Terraform
+    runs-on: ubuntu-latest
+    environment: test
+    if: ${{ needs.prepare-terraform.outputs.plan-status == 2 }}
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select prod
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: plan
+          path: terraform/
 
       # Apply the terraform code
       - name: Terraform Apply
