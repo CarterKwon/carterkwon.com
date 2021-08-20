@@ -7,15 +7,9 @@ on:
     branches-ignore:
       - main
 
-# Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
 defaults:
   run:
     shell: bash
-
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: "us-east-1"
 
 jobs:
   prepare-terraform:
@@ -23,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       plan-status: ${{ steps.plan.outputs.exitcode }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "us-east-1"
+      TF_VAR_tags: 'tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
+      TF_VAR_app_domain: "${{ env.BRANCH_HASH }}.test.carterkwon.com"
     defaults:
       run:
         working-directory: terraform
@@ -60,7 +60,7 @@ jobs:
       # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
-        run: terraform plan -input=false -no-color -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=${{ env.BRANCH_HASH }}.test.carterkwon.com" -detailed-exitcode -out=terraform.plan
+        run: terraform plan -input=false -no-color -detailed-exitcode -out=terraform.plan
         continue-on-error: true
 
       - name: Upload Terraform Artifacts
@@ -115,6 +115,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve terraform.plan
 
+  # Build and deploy the React application
   build-and-deploy-react:
     if: always()
     needs: deploy-terraform
@@ -145,5 +146,4 @@ jobs:
 
       - name: Upload files to S3
         run: |
-          ls
-          aws s3 sync build/ s3://carterkwon.com-557228 --delete
+          aws s3 sync build/ s3://carterkwon.com-${{ env.BRANCH_HASH }} --delete
