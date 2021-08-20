@@ -45,7 +45,7 @@ jobs:
 
       # Generates an execution plan for Terraform
       - name: Terraform Plan
-        run: terraform plan -var='tag={"environment":"prod", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
+        run: terraform plan -var='tags={"environment":"prod", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
 
       # Apply the terraform code
       - name: Terraform Apply
