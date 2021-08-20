@@ -11,17 +11,16 @@ defaults:
   run:
     shell: bash
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: "us-east-1"
-
 jobs:
   prepare-terraform:
     name: Prepare Terraform
     runs-on: ubuntu-latest
     outputs:
       plan-status: ${{ steps.plan.outputs.exitcode }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "us-east-1"
     defaults:
       run:
         working-directory: terraform
@@ -59,6 +58,9 @@ jobs:
       # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
+        env:
+          TF_VAR_tags: 'tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
+          TF_VAR_app_domain: "${{ env.BRANCH_HASH }}.test.carterkwon.com"
         run: terraform plan -input=false -no-color -detailed-exitcode -out=terraform.plan
         continue-on-error: true
 
