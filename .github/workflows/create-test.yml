@@ -58,10 +58,7 @@ jobs:
       # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
-        env:
-          TF_VAR_tags: '{"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
-          TF_VAR_app_domain: "${{ env.BRANCH_HASH }}.test.carterkwon.com"
-        run: terraform plan -input=false -no-color -detailed-exitcode -out=terraform.plan
+        run: terraform plan -var='tag={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="${{ env.BRANCH_HASH }}.test.carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
         continue-on-error: true
 
       - name: Upload Terraform Artifacts
@@ -131,6 +128,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
@@ -143,7 +149,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # replace this with your aws-region
+          aws-region: us-east-1
 
       - name: Upload files to S3
         run: |
