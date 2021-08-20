@@ -59,7 +59,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         env:
-          TF_VAR_tags: 'tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
+          TF_VAR_tags: '{"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}'
           TF_VAR_app_domain: "${{ env.BRANCH_HASH }}.test.carterkwon.com"
         run: terraform plan -input=false -no-color -detailed-exitcode -out=terraform.plan
         continue-on-error: true
