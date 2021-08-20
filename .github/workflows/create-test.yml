@@ -153,4 +153,4 @@ jobs:
 
       - name: Upload files to S3
         run: |
-          aws s3 sync build/ s3://carterkwon.com-${{ env.BRANCH_HASH }} --delete
+          aws s3 sync build/ s3://carterkwon.com-$BRANCH_HASH --delete
