@@ -3,6 +3,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "branch_name" {
-  description = "The name of the branch that's being deployed."
+variable "tags" {
+  description = "Resource tags"
+  type        = map(string)
+}
+
+variable "app_domain" {
+  description = "Domain of the app"
+  type        = string
 }

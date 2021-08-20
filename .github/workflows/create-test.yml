@@ -1,0 +1,156 @@
+name: "Create Test Environment"
+
+concurrency: ci-${{ github.ref }}
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  prepare-terraform:
+    name: Prepare Terraform
+    runs-on: ubuntu-latest
+    outputs:
+      plan-status: ${{ steps.plan.outputs.exitcode }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: "us-east-1"
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+
+        # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select $BRANCH_HASH || terraform workspace new $BRANCH_HASH
+
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var='tags={"environment":"test-${{ env.BRANCH_HASH }}", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=${{ env.BRANCH_HASH }}.test.carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
+        continue-on-error: true
+
+      - name: Upload Terraform Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: plan
+          path: terraform/terraform.plan
+
+  deploy-terraform:
+    needs: prepare-terraform
+    name: Deploy Terraform
+    runs-on: ubuntu-latest
+    environment: test
+    if: ${{ needs.prepare-terraform.outputs.plan-status == 2 }}
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+
+        # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select $BRANCH_HASH
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: plan
+          path: terraform/
+
+      # Apply the terraform code
+      - name: Terraform Apply
+        run: terraform apply -auto-approve terraform.plan
+
+  # Build and deploy the React application
+  build-and-deploy-react:
+    if: always()
+    needs: deploy-terraform
+    name: Build & Deploy React
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Get the first 6 characters from hash of branch name to use as identifier
+      - name: Extract Branch Hash (Non-PR)
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_REF#refs/heads/" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Extract Branch Hash
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_HASH=$(echo "$GITHUB_SHA" | sha256sum | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - run: npm install
+      - run: CI=false npm run build
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload files to S3
+        run: |
+          aws s3 sync build/ s3://carterkwon.com-${{ env.BRANCH_HASH }} --delete
