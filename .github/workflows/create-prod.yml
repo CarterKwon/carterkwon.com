@@ -60,7 +60,7 @@ jobs:
     needs: prepare-terraform
     name: Deploy Terraform
     runs-on: ubuntu-latest
-    environment: test
+    environment: prod
     if: ${{ needs.prepare-terraform.outputs.plan-status == 2 }}
     defaults:
       run:
