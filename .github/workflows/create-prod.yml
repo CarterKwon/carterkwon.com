@@ -1,51 +1,85 @@
-name: 'Create Terraform Prod Environment'
+name: "Create Prod Environment"
 
 on:
   push:
     branches:
-    - main
+      - main
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  create-infrastructure:
+  # Deploy infrastructure resources
+  deploy-terraform:
     name: Create prod environment
     runs-on: ubuntu-latest
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: terraform
-
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: 'us-east-1'    
-    
+      AWS_DEFAULT_REGION: "us-east-1"
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v2
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      run: terraform init
-    
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      run: terraform fmt -check
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
 
-    # Configure workspace
-    - name: Terraform Workspace
-      run: terraform workspace select prod || terraform workspace new prod
-    
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      run: terraform plan -input=false -no-color
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check
 
-    # Apply the terraform code
-    - name: Terraform Apply
-      run: terraform apply -auto-approve
+      # Configure workspace
+      - name: Terraform Workspace
+        run: terraform workspace select prod || terraform workspace new prod
+
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        run: terraform plan -var='tag={"environment":"prod", "author":"Carter Kwon", "product":"carterkwon.com"}' -var="app_domain=carterkwon.com" -input=false -no-color -detailed-exitcode -out=terraform.plan
+
+      # Apply the terraform code
+      - name: Terraform Apply
+        run: terraform apply -auto-approve terraform.plan
+
+  # Build and deploy the React application
+  build-and-deploy-react:
+    if: always()
+    needs: deploy-terraform
+    name: Build & Deploy React
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - run: npm install
+      - run: CI=false npm run build
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload files to S3
+        run: |
+          aws s3 sync build/ s3://carterkwon.com-prod --delete
