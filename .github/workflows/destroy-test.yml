@@ -1,4 +1,4 @@
-name: "Manually Destory Test Environment"
+name: "Destory Test Environment"
 
 on:
   workflow_dispatch:
