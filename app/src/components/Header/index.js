@@ -13,7 +13,7 @@ export default function Header() {
             <li>
               <a
                 target="_blank"
-                href="https://dribbble.com/{{ site.dribbble_username| cgi_escape | escape }}"
+                href="www.linkedin.com/in/carterkwon"
                 class="button button--sacnite button--round-l"
               >
                 <i class="fab fa-linkedin" title="Dribble link"></i>
@@ -22,13 +22,13 @@ export default function Header() {
           </ul>
           <p>
             {"Email: "}
-            <a href="mailto:{{ site.email }}" target="_blank">
+            <a href="mailto:carterkwon@me.com" target="_blank">
               carterkwon@me.com
             </a>
           </p>
           <p>
             {"Web: "}
-            <a href="mailto:{{ site.email }}" target="_blank">
+            <a href="https://carterkwon.com" target="_blank">
               https://carterkwon.com
             </a>
           </p>
