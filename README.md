@@ -1,4 +1,4 @@
-# carterkwon.com
+# [carterkwon.com](https://carterkwon.com)
 
 My personal website built using React - complete with a CI/CD pipeline using GitHub Actions and Terraform.
 
