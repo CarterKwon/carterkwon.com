@@ -15,9 +15,9 @@ export default function About() {
         <div class="col-xs-12 col-sm-8 col-md-9 col-print-12">
           <p>
             Inquisitive, hard-working developer skilled in leadership, with a strong
-            foundation in coding. Earned a Bachelor of Science in Computer Science with
-            magna cum laude honors and currently pursuing a Master of Computer Science
-            degree. Served as an AWS Subject Matter Expert during the development of the
+            foundation in coding. Earned a Master of Computer Science
+            degree and a Bachelor of Science in Computer Science with
+            magna cum laude honors. Served as an AWS Subject Matter Expert during the development of the
             AWS Certified Alexa Skill Builder Examination. Certified AWS Cloud
             Practitioner and Solutions Architect - Associate. Published developer on the
             Alexa Skill Store and Apple App Store. Winner of Voicehacks Hackathon 2019.
