@@ -8,8 +8,12 @@ const data = [
     link: "https://www.asu.edu/",
     positions: [
       {
+        title: "Senior Cloud Systems Engineer",
+        dates: "November 2023 - Present",
+      },
+      {
         title: "Business Intelligence Developer",
-        dates: "May 2019 - Present",
+        dates: "May 2019 - November 2023",
       },
       {
         title: "Business Intelligence Associate",
