@@ -6,7 +6,7 @@ export default function Header() {
       <div class="row">
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-8 header-left">
           <h1>Carter Kwon</h1>
-          <h2>Developer</h2>
+          <h2>Senior Cloud Systems Engineer</h2>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 header-right">
           <ul class="icons no-print">
